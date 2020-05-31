@@ -41,19 +41,35 @@ extension TodoListViewController{
         }else{
             tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         }
-        
-//        if itemArray[indexPath.row].isChecked == false{
-//            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-//            itemArray[indexPath.row].isChecked = true
-////            tableView.reloadData()
-//        }else{
-//            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-//            itemArray[indexPath.row].isChecked = false
-////            tableView.reloadData()
-//        }
-        
         tableView.deselectRow(at: indexPath, animated: true)
         
+    }
+}
+
+//MARK: Bar Button Action
+extension TodoListViewController{
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        var note    = UITextField()
+        let alertAC = UIAlertController(title: "Add New Item",
+                                        message: "",
+                                        preferredStyle: .alert)
+        alertAC.addTextField { (textField) in
+            note = textField
+            textField.placeholder = "Create new item"
+            print(note)
+        }
+        
+        let addNote = UIAlertAction(title: "Add Item", style: .default){ action in
+            if let newNote = note.text, !newNote.isEmpty{
+                let indexPath = IndexPath(row: self.itemArray.count, section: 0)
+                self.itemArray.append(newNote)
+                self.tableView.insertRows(at: [indexPath], with: .automatic)
+                note.text = ""
+            }
+        }
+        
+        alertAC.addAction(addNote)
+        present(alertAC, animated: true)
     }
 }
 
