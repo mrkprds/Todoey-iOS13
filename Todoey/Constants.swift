@@ -11,4 +11,5 @@ import Foundation
 
 enum Const{
     static let todoCellID = "TodoItemCell"
+    static let itemsArrayKey = "TodoListArray"
 }
