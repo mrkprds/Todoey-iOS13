@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Item {
+struct Item: Codable {
     var name: String
     var isChecked: Bool = false
 }
