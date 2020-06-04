@@ -7,39 +7,39 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
     
     var itemArray = [Item]()
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("test.plist")
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadItems()
+//        loadItems()
         
     }
     
     func saveItem(){
-        let encoder = PropertyListEncoder()
         do{
-            let data = try encoder.encode(self.itemArray)
-            try data.write(to: self.dataFilePath!)
+            try context.save()
         }catch{
-            print("Error encoding: \(error)")
+            print("Error saving: \(error)")
         }
     }
     
-    func loadItems(){
-        let decoder = PropertyListDecoder()
-        if let data = try? Data(contentsOf: dataFilePath!){
-            do{
-                itemArray = try decoder.decode([Item].self, from: data)
-            }catch{
-                print(error)
-            }
-            
-        }
-    }
+//    func loadItems(){
+//        let decoder = PropertyListDecoder()
+//        if let data = try? Data(contentsOf: dataFilePath!){
+//            do{
+//                itemArray = try decoder.decode([Item].self, from: data)
+//            }catch{
+//                print(error)
+//            }
+//
+//        }
+//    }
 }
 
 //MARK: Table View Datasource Methods
@@ -85,9 +85,11 @@ extension TodoListViewController{
         
         let addNote = UIAlertAction(title: "Add Item", style: .default){ action in
             if let newNote = note.text, !newNote.isEmpty{
-                let newItem = Item(name: newNote)
+                let newItem = Item(context: self.context)
                 let indexPath = IndexPath(row: self.itemArray.count, section: 0)
                 
+                newItem.name = newNote
+                newItem.isChecked = false
                 self.itemArray.append(newItem)
                 self.saveItem()
                 
