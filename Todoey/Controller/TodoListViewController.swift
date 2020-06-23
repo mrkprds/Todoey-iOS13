@@ -64,17 +64,54 @@ extension TodoListViewController{
         tableView.reloadRows(at: [indexPath], with: .fade)
         saveItem()
     }
+    
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let edit   = editAction(at: indexPath)
+//        let delete = deleteAction(at: indexPath)
+        return UISwipeActionsConfiguration(actions: [edit])
+    }
+    
+    func editAction(at indexPath: IndexPath) -> UIContextualAction{
+        let item = itemArray[indexPath.row]
+        
+        //alert controller for editing note
+        var note = UITextField()
+        let editNoteAC = UIAlertController(title: "Edit Note", message: "", preferredStyle: .alert)
+        editNoteAC.addTextField { (textField) in
+            note = textField
+            textField.placeholder = "\(item.name!)"
+        }
+        let saveEditNote = UIAlertAction(title: "Save", style: .destructive) { (action) in
+            if let editedNote = note.text, !editedNote.isEmpty{
+                item.setValue(editedNote, forKey: "name")
+                self.saveItem()
+                self.tableView.reloadRows(at: [indexPath], with: .fade)
+            }
+        }
+        editNoteAC.addAction(saveEditNote)
+        editNoteAC.addAction(UIAlertAction(title: "Cancel", style: .default))
+
+        //when edit is pressed on swipeaction it will show alert controller for editing note
+        let action = UIContextualAction(style: .normal, title: "Edit") { (action, view, completion) in
+            self.present(editNoteAC, animated: true)
+        }
+        
+        return action
+    }
+//    func deleteAction(at indexPath: IndexPath) -> UIContextualAction{
+//
+//    }
 }
 
 //MARK: Bar Button Action
 extension TodoListViewController{
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var note    = UITextField()
-        let alertAC = UIAlertController(title: "Add New Item",
+        let newNoteAC = UIAlertController(title: "Add New Item",
                                         message: "",
                                         preferredStyle: .alert)
         
-        alertAC.addTextField { (textField) in
+        newNoteAC.addTextField { (textField) in
             note = textField
             textField.placeholder = "Create new item"
         }
@@ -94,8 +131,8 @@ extension TodoListViewController{
             }
         }
         
-        alertAC.addAction(addNote)
-        present(alertAC, animated: true)
+        newNoteAC.addAction(addNote)
+        present(newNoteAC, animated: true)
     }
 }
 
