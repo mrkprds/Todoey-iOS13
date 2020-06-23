@@ -17,8 +17,7 @@ class TodoListViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        loadItems()
-        
+        loadItems()
     }
     
     func saveItem(){
@@ -29,17 +28,14 @@ class TodoListViewController: UITableViewController {
         }
     }
     
-//    func loadItems(){
-//        let decoder = PropertyListDecoder()
-//        if let data = try? Data(contentsOf: dataFilePath!){
-//            do{
-//                itemArray = try decoder.decode([Item].self, from: data)
-//            }catch{
-//                print(error)
-//            }
-//
-//        }
-//    }
+    func loadItems(){
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        do{
+            itemArray = try context.fetch(request)
+        }catch{
+            print(error)
+        }
+    }
 }
 
 //MARK: Table View Datasource Methods
@@ -66,7 +62,7 @@ extension TodoListViewController{
         
         tableView.deselectRow(at: indexPath, animated: true)
         tableView.reloadRows(at: [indexPath], with: .fade)
-        
+        saveItem()
     }
 }
 
