@@ -67,8 +67,8 @@ extension TodoListViewController{
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let edit   = editAction(at: indexPath)
-//        let delete = deleteAction(at: indexPath)
-        return UISwipeActionsConfiguration(actions: [edit])
+        let delete = deleteAction(at: indexPath)
+        return UISwipeActionsConfiguration(actions: [edit, delete])
     }
     
     func editAction(at indexPath: IndexPath) -> UIContextualAction{
@@ -94,13 +94,24 @@ extension TodoListViewController{
         //when edit is pressed on swipeaction it will show alert controller for editing note
         let action = UIContextualAction(style: .normal, title: "Edit") { (action, view, completion) in
             self.present(editNoteAC, animated: true)
+            completion(true)
+        }
+        action.backgroundColor = .systemYellow
+        
+        return action
+    }
+    func deleteAction(at indexPath: IndexPath) -> UIContextualAction{
+        let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completion) in
+            self.context.delete(self.itemArray[indexPath.row])
+            self.itemArray.remove(at: indexPath.row)
+            self.saveItem()
+            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+            completion(true)
         }
         
         return action
     }
-//    func deleteAction(at indexPath: IndexPath) -> UIContextualAction{
-//
-//    }
+    
 }
 
 //MARK: Bar Button Action
