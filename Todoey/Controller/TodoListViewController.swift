@@ -18,6 +18,7 @@ class TodoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loadItems()
+        tableView.setContentOffset(CGPoint.init(x: 0, y: 50), animated: false)
     }
     
     func saveItem(){
@@ -28,8 +29,7 @@ class TodoListViewController: UITableViewController {
         }
     }
     
-    func loadItems(){
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()){
         do{
             itemArray = try context.fetch(request)
         }catch{
@@ -93,6 +93,7 @@ extension TodoListViewController{
 
         //when edit is pressed on swipeaction it will show alert controller for editing note
         let action = UIContextualAction(style: .normal, title: "Edit") { (action, view, completion) in
+            print(indexPath)
             self.present(editNoteAC, animated: true)
             completion(true)
         }
@@ -147,3 +148,16 @@ extension TodoListViewController{
     }
 }
 
+
+//MARK: SearchBar
+extension TodoListViewController: UISearchBarDelegate{
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        if let searchQuery = searchBar.text, !searchQuery.isEmpty{
+            request.predicate = NSPredicate(format: "name CONTAINS[cd] %@", searchQuery)
+            request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+            loadItems()
+            tableView.reloadData()
+        }
+    }
+}
