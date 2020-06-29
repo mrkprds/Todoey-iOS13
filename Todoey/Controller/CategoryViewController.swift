@@ -56,7 +56,43 @@ extension CategoryViewController{
 
 // MARK: - Table View Delegate Methods
 extension CategoryViewController{
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let edit = editAction(at: indexPath)
+        
+        return UISwipeActionsConfiguration(actions: [edit])
+    }
     
+    func editAction(at indexPath: IndexPath) -> UIContextualAction{
+        let category = categoriesArray[indexPath.row]
+        
+        //alert controller for editing category
+        var categoryText = UITextField()
+        let editCategoryAC = UIAlertController(title: "Edit", message: category.categoryName, preferredStyle: .alert)
+        
+        editCategoryAC.addTextField { (textfield) in
+            textfield.placeholder = category.categoryName
+            categoryText = textfield
+        }
+        
+        let editCategoryAction = UIAlertAction(title: "Save", style: .destructive) { (action) in
+            if let text = categoryText.text, !text.isEmpty{
+                category.setValue(text, forKey: "categoryName")
+                self.saveCategory()
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
+            
+        }
+        
+        editCategoryAC.addAction(editCategoryAction)
+        editCategoryAC.addAction(UIAlertAction(title: "Cancel", style: .default))
+        
+        let contextualAction = UIContextualAction(style: .normal, title: "Edit") { (action, view, completion) in
+            self.present(editCategoryAC, animated: true)
+            completion(true)
+        }
+        contextualAction.backgroundColor = .systemYellow
+        return contextualAction
+    }
 }
 
 //MARK: - Bar Button Item
