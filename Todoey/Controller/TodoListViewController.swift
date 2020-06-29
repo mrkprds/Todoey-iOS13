@@ -12,7 +12,6 @@ import CoreData
 class TodoListViewController: UITableViewController {
     
     var itemArray = [Item]()
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("test.plist")
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
@@ -151,11 +150,27 @@ extension TodoListViewController{
 
 //MARK: SearchBar
 extension TodoListViewController: UISearchBarDelegate{
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+//        let request: NSFetchRequest<Item> = Item.fetchRequest()
+//        if let searchQuery = searchBar.text, !searchQuery.isEmpty{
+//            request.predicate = NSPredicate(format: "name CONTAINS[cd] %@", searchQuery)
+//            request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+//            loadItems(with: request)
+//            tableView.reloadData()
+//        }else{
+//            loadItems()
+//            tableView.reloadData()
+//        }
+//    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         let request: NSFetchRequest<Item> = Item.fetchRequest()
         if let searchQuery = searchBar.text, !searchQuery.isEmpty{
             request.predicate = NSPredicate(format: "name CONTAINS[cd] %@", searchQuery)
             request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+            loadItems(with: request)
+            tableView.reloadData()
+        }else{
             loadItems()
             tableView.reloadData()
         }
